@@ -1,14 +1,17 @@
 import React,{useState,useRef} from 'react'
 import Header from './Header'
 import { checkValidData } from '../utils/validate'
-import { createUserWithEmailAndPassword ,signInWithEmailAndPassword} from "firebase/auth";
+import { createUserWithEmailAndPassword ,signInWithEmailAndPassword, updateProfile} from "firebase/auth";
 import { auth } from '../utils/firebase';
+import { useNavigate } from 'react-router-dom';
 const Login = () => {
+  const navigate = useNavigate();
   const[signInForm,setSignInForm] = useState(true)
   const [errorMessage,setErrorMessage] = useState(null);
     const toggleSignInForm = () =>{
       setSignInForm(!signInForm)
     }
+    const name = useRef(null)
     const email =useRef(null)
     const password =useRef(null)
 
@@ -26,6 +29,13 @@ const Login = () => {
           //signed in
           const user = userCredential.user;
           console.log(user);
+          updateProfile(user, {
+            displayName:name.current.value, photoURL:"http://google.com/photos/default.jpg"
+          }).then(()=>{
+            navigate('/browse')
+          }
+
+          )
          }).catch((error) => {
             const errorCode = error.code;
             const errorMessage = error.message
@@ -39,6 +49,7 @@ const Login = () => {
          .then((userCredential) =>{
           const user = userCredential.user;
           console.log(user); 
+          navigate('/browse')
          })
          .catch((error)=>
          {
